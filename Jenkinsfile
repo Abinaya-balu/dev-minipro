@@ -24,7 +24,7 @@ pipeline {
                 // Grant executable permissions to the deploy script
                 sh 'chmod +x deploy.sh'
 
-                // Build the Docker image using the deploy script
+                // Build and push the Docker image using the deploy script
                 sh './deploy.sh'
             }
         } 
@@ -38,5 +38,5 @@ pipeline {
                 }
             }
         }
-    } 
-} 
+    }  // 🔥 Closing brace for "stages" added here
+}  // 🔥 Closing brace for "pipeline" remains unchanged
