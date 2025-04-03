@@ -5,63 +5,66 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 echo 'Cloning repository...'
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/master']],
-                    doGenerateSubmoduleConfigurations: false,
-                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: '.']],
-                    userRemoteConfigs: [[url: 'https://github.com/Abinaya-balu/dev-minipro.git']]
-                ])
-                sh 'ls -l' // Debugging step to verify files
+                checkout scm
+                sh 'ls -l'  // List contents to verify checkout
             }
         }
 
         stage('Setup Node.js') {
             steps {
-                script {
-                    sh 'node -v'
-                    sh 'npm -v'
+                sh 'node -v'
+                sh 'npm -v'
+            }
+        }
+
+        stage('Install Server Dependencies') {
+            steps {
+                dir('server') { // Navigate to server directory
+                    sh 'npm install'
                 }
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install Client Dependencies') {
             steps {
-                script {
-                    sh 'cd mern-app && ls -l' // Debugging step to confirm package.json
-                    sh 'cd mern-app && npm install' // Install dependencies inside correct folder
+                dir('client') { // Navigate to client directory
+                    sh 'npm install'
                 }
             }
         }
 
-        stage('Build App') {
+        stage('Build Client') {
             steps {
-                script {
-                    sh 'cd mern-app && npm run build'
+                dir('client') {
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        stage('Start Server') {
+            steps {
+                dir('server') {
+                    sh 'node app.js &'
                 }
             }
         }
 
         stage('Build and Push Docker Image') {
             steps {
-                script {
-                    sh './build.sh'
-                }
+                sh './build.sh'
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                script {
-                    sh './deploy.sh'
-                }
+                sh './deploy.sh'
             }
         }
     }
 
     post {
-        success {
-            echo 'Pipeline execution completed successfully!'
+        always {
+            echo 'Pipeline execution finished'
         }
         failure {
             echo 'Pipeline failed. Check logs!'
