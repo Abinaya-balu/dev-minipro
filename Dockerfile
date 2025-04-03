@@ -1,25 +1,18 @@
-# 1️⃣ Build React frontend
-FROM node:18 AS frontend-builder
-WORKDIR /app
-COPY build/client/package.json build/client/package-lock.json ./
+# Use Node.js as the base image
+FROM node:14
+
+# Set working directory for backend
+WORKDIR /app/backend
+
+# Copy package files and install dependencies
+COPY ./backend/package.json ./backend/package-lock.json ./
 RUN npm install
-COPY build/client ./
-RUN npm run build
 
-# 2️⃣ Setup Node.js backend
-FROM node:18 AS backend
-WORKDIR /app
-COPY build/server/package.json build/server/package-lock.json ./
-RUN npm install
-COPY build/server ./
-COPY --from=frontend-builder /app/build /app/build/client  # Copy React build
+# Copy the backend source code
+COPY ./backend ./backend
 
-# Install PM2 to run both services
-RUN npm install -g pm2
+# Expose the port the backend server runs on
+EXPOSE 5000
 
-# 3️⃣ Final Image to Run App
-FROM node:18
-WORKDIR /app
-COPY --from=backend /app /app
-EXPOSE 5000 3000
-CMD ["pm2-runtime", "server/app.js"]
+# Start the backend server
+CMD ["node", "server.js"]
