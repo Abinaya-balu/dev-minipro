@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS 18' // 🔥 Use the NodeJS tool from Jenkins
+        nodejs 'NodeJS' // 🔥 Use the NodeJS tool from Jenkins
     }
 
     environment {
