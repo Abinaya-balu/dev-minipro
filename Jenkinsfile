@@ -21,12 +21,14 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             steps {
-                withCredentials([string(credentialsId: 'docker-hub-credentials', variable: 'DOCKER_HUB_PASSWORD')]) {
-                    sh 'chmod +x deploy.sh'
-                    sh './deploy.sh'
-                }
+                // Grant executable permissions to the build script
+                sh 'chmod +x deploy.sh'
+
+                // Build the Docker image using the build script
+                sh './deploy.sh'
+
+                
             }
-        }
 
         stage('Deploy to Kubernetes') {
             steps {
