@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: backend
+        image: my-dockerhub-username/my-app-backend:latest
+        command: ["node", "/app/build/server/app.js"]
+        ports:
+        - containerPort: 5000
+      - name: frontend
+        image: my-dockerhub-username/my-app-frontend:latest
+        command: ["npm", "start"]
+        workingDir: "/app/build/client"
+        ports:
+        - containerPort: 3000
