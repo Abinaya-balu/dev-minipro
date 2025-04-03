@@ -1,74 +1,44 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Clone Repository') {
-            steps {
-                echo 'Cloning repository...'
-                checkout scm
-                sh 'ls -l'  // Verify files
-            }
-        }
-
-        stage('Setup Node.js') {
-            steps {
-                sh 'node -v'
-                sh 'npm -v'
-            }
-        }
-
-        stage('Install Server Dependencies') {
-            steps {
-                dir('build/server') { // Corrected path
-                    sh 'npm install'
-                }
-            }
-        }
-
-        stage('Install Client Dependencies') {
-            steps {
-                dir('build/client') { // Corrected path
-                    sh 'npm install'
-                }
-            }
-        }
-
-        stage('Build Client') {
-            steps {
-                dir('build/client') {
-                    sh 'npm run build'
-                }
-            }
-        }
-
-        stage('Start Server') {
-            steps {
-                dir('build/server') {
-                    sh 'node app.js &'
-                }
-            }
-        }
-
-        stage('Build and Push Docker Image') {
-            steps {
-                sh './build.sh'
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                sh './deploy.sh'
-            }
-        }
+    environment {
+        IMAGE_NAME = "abinayabalusamy/reactbooking"
+        CONTAINER_NAME = "my-app"
+        REGISTRY = "docker.io/abinayabalusamy"
     }
 
-    post {
-        always {
-            echo 'Pipeline execution finished'
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
         }
-        failure {
-            echo 'Pipeline failed. Check logs!'
+
+        stage('Build and Test') {
+            steps {
+                script {
+                    sh 'docker build -t $IMAGE_NAME .'
+                }
+            }
+        }
+
+        stage('Push to Registry') {
+            steps {
+                script {
+                    sh 'docker tag $IMAGE_NAME $REGISTRY/$IMAGE_NAME:latest'
+                    sh 'docker push $REGISTRY/$IMAGE_NAME:latest'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    sh './deploy.sh'
+                }
+            }
         }
     }
 }
+
 
