@@ -9,7 +9,7 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: '*/master']],
                     doGenerateSubmoduleConfigurations: false,
-                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'mern-app']],
+                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: '.']], // Clone directly into workspace
                     userRemoteConfigs: [[url: 'https://github.com/Abinaya-balu/dev-minipro.git']]
                 ])
             }
@@ -27,7 +27,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    sh 'cd mern-app && npm install'
+                    sh 'npm install' // No need to change directory
                 }
             }
         }
@@ -35,7 +35,7 @@ pipeline {
         stage('Build App') {
             steps {
                 script {
-                    sh 'cd mern-app && CI=false npm run build'
+                    sh 'CI=false npm run build' // Run in correct directory
                 }
             }
         }
@@ -46,7 +46,7 @@ pipeline {
             }
             steps {
                 echo 'Building and pushing Docker image...'
-                sh 'cd mern-app && ./docker-build.sh'
+                sh './docker-build.sh'
             }
         }
 
@@ -56,7 +56,7 @@ pipeline {
             }
             steps {
                 echo 'Deploying to Kubernetes...'
-                sh 'cd mern-app && ./deploy.sh'
+                sh './deploy.sh'
             }
         }
     }
@@ -70,4 +70,3 @@ pipeline {
         }
     }
 }
-
