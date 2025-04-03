@@ -9,9 +9,10 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: '*/master']],
                     doGenerateSubmoduleConfigurations: false,
-                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: '.']], // Clone directly into workspace
+                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: '.']],
                     userRemoteConfigs: [[url: 'https://github.com/Abinaya-balu/dev-minipro.git']]
                 ])
+                sh 'ls -l' // Debugging step to verify files
             }
         }
 
@@ -27,7 +28,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    sh 'npm install' // No need to change directory
+                    sh 'cd mern-app && ls -l' // Debugging step to confirm package.json
+                    sh 'cd mern-app && npm install' // Install dependencies inside correct folder
                 }
             }
         }
@@ -35,38 +37,35 @@ pipeline {
         stage('Build App') {
             steps {
                 script {
-                    sh 'CI=false npm run build' // Run in correct directory
+                    sh 'cd mern-app && npm run build'
                 }
             }
         }
 
         stage('Build and Push Docker Image') {
-            when {
-                expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
-            }
             steps {
-                echo 'Building and pushing Docker image...'
-                sh './docker-build.sh'
+                script {
+                    sh './build.sh'
+                }
             }
         }
 
         stage('Deploy to Kubernetes') {
-            when {
-                expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
-            }
             steps {
-                echo 'Deploying to Kubernetes...'
-                sh './deploy.sh'
+                script {
+                    sh './deploy.sh'
+                }
             }
         }
     }
 
     post {
-        always {
-            echo 'Pipeline execution finished'
+        success {
+            echo 'Pipeline execution completed successfully!'
         }
         failure {
             echo 'Pipeline failed. Check logs!'
         }
     }
 }
+
