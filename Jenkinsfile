@@ -21,14 +21,13 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             steps {
-                // Grant executable permissions to the build script
+                // Grant executable permissions to the deploy script
                 sh 'chmod +x deploy.sh'
 
-                // Build the Docker image using the build script
+                // Build the Docker image using the deploy script
                 sh './deploy.sh'
-
-                
             }
+        } 
 
         stage('Deploy to Kubernetes') {
             steps {
@@ -39,5 +38,5 @@ pipeline {
                 }
             }
         }
-    }
-}
+    } 
+} 
