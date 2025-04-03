@@ -14,12 +14,12 @@ spec:
     spec:
       containers:
       - name: backend
-        image: my-dockerhub-username/my-app-backend:latest
+        image: abinayabalusamy/mern-app:latest
         command: ["node", "/app/build/server/app.js"]
         ports:
         - containerPort: 5000
       - name: frontend
-        image: my-dockerhub-username/my-app-frontend:latest
+        image: abinayabalusamy/mern-app:latest
         command: ["npm", "start"]
         workingDir: "/app/build/client"
         ports:
