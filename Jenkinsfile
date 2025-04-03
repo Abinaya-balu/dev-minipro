@@ -6,7 +6,7 @@ pipeline {
             steps {
                 echo 'Cloning repository...'
                 checkout scm
-                sh 'ls -l'  // List contents to verify checkout
+                sh 'ls -l'  // Verify files
             }
         }
 
@@ -19,7 +19,7 @@ pipeline {
 
         stage('Install Server Dependencies') {
             steps {
-                dir('server') { // Navigate to server directory
+                dir('build/server') { // Corrected path
                     sh 'npm install'
                 }
             }
@@ -27,7 +27,7 @@ pipeline {
 
         stage('Install Client Dependencies') {
             steps {
-                dir('client') { // Navigate to client directory
+                dir('build/client') { // Corrected path
                     sh 'npm install'
                 }
             }
@@ -35,7 +35,7 @@ pipeline {
 
         stage('Build Client') {
             steps {
-                dir('client') {
+                dir('build/client') {
                     sh 'npm run build'
                 }
             }
@@ -43,7 +43,7 @@ pipeline {
 
         stage('Start Server') {
             steps {
-                dir('server') {
+                dir('build/server') {
                     sh 'node app.js &'
                 }
             }
