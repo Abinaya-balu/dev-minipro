@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         DOCKER_HUB_USER = "abinayabalusamy"
-        DOCKER_HUB_PASSWORD = credentials('docker-hub-credentials') // Jenkins Credentials
     }
 
     stages {
@@ -22,15 +21,20 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             steps {
-                sh 'chmod +x deploy.sh'
-                sh './deploy.sh'
+                withCredentials([string(credentialsId: 'docker-hub-credentials', variable: 'DOCKER_HUB_PASSWORD')]) {
+                    sh 'chmod +x deploy.sh'
+                    sh './deploy.sh'
+                }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f k8s/deployment.yaml'
-                sh 'kubectl apply -f k8s/service.yaml'
+                script {
+                    sh 'kubectl config current-context'  // Debugging: Check the current cluster
+                    sh 'kubectl apply -f k8s/deployment.yaml'
+                    sh 'kubectl apply -f k8s/service.yaml'
+                }
             }
         }
     }
