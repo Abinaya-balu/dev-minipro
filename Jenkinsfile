@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_USER = "your-dockerhub-username"
-        DOCKER_HUB_PASSWORD = credentials('docker-hub-credentials') // Jenkins Credentials
+        DOCKER_HUB_USER = "abinayabalusamy"
+        DOCKER_HUB_PASSWORD = credentials('dckr_pat_JHYzC2wC8xUc2iq4-QSMIwHHkNs') // Jenkins Credentials
     }
 
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/your-repo/react-app.git'
+                git 'https://github.com/Abinaya-balu/dev-minipro.git'
             }
         }
 
