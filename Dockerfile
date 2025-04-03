@@ -1,18 +1,31 @@
-# Use Node.js as the base image
-FROM node:14
+# Use a Node.js base image
+FROM node:18-alpine AS build-stage
 
-# Set working directory for backend
-WORKDIR /app/backend
+# Set the working directory
+WORKDIR /app
 
-# Copy package files and install dependencies
-COPY ./backend/package.json ./backend/package-lock.json ./
-RUN npm install
+# Copy the package.json files and install dependencies
+COPY server/package.json server/package-lock.json ./server/
+COPY client/package.json client/package-lock.json ./client/
 
-# Copy the backend source code
-COPY ./backend ./backend
+# Install dependencies for both server and client
+RUN cd server && npm install
+RUN cd client && npm install && npm run build
 
-# Expose the port the backend server runs on
+# Use a lightweight Node.js image for production
+FROM node:18-alpine AS production-stage
+
+WORKDIR /app
+
+# Copy built client files and server files
+COPY --from=build-stage /app/server /app/server
+COPY --from=build-stage /app/client/build /app/server/public
+
+# Set environment variables
+ENV NODE_ENV=production
+
+# Expose the necessary port
 EXPOSE 5000
 
-# Start the backend server
-CMD ["node", "server.js"]
+# Start the server
+CMD ["node", "server/app.js"]
