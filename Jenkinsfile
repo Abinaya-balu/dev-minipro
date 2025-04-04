@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME_CLIENT = "abinayabalusamy/react-client"
-        IMAGE_NAME_SERVER = "abinayabalusamy/react-server"
+        CLIENT_IMAGE = "abinayabalusamy/react-client"
+        SERVER_IMAGE = "abinayabalusamy/react-server"
     }
 
     stages {
@@ -24,9 +24,8 @@ pipeline {
         stage('Build & Push Client Image') {
             steps {
                 script {
-                    sh "docker build -t $IMAGE_NAME_CLIENT:latest ./client"
-                    sh "docker tag $IMAGE_NAME_CLIENT:latest $IMAGE_NAME_CLIENT:latest"
-                    sh "docker push $IMAGE_NAME_CLIENT:latest"
+                    sh "docker build -t $CLIENT_IMAGE:latest ./client"
+                    sh "docker push $CLIENT_IMAGE:latest"
                 }
             }
         }
@@ -34,9 +33,8 @@ pipeline {
         stage('Build & Push Server Image') {
             steps {
                 script {
-                    sh "docker build -t $IMAGE_NAME_SERVER:latest ./server"
-                    sh "docker tag $IMAGE_NAME_SERVER:latest $IMAGE_NAME_SERVER:latest"
-                    sh "docker push $IMAGE_NAME_SERVER:latest"
+                    sh "docker build -t $SERVER_IMAGE:latest ./server"
+                    sh "docker push $SERVER_IMAGE:latest"
                 }
             }
         }
