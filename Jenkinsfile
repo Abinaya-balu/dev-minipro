@@ -21,23 +21,17 @@ pipeline {
             }
         }
 
-        stage('Build & Push Client Image') {
-            steps {
-                script {
-                    sh "docker build -t $CLIENT_IMAGE:latest ./client"
-                    sh "docker push $CLIENT_IMAGE:latest"
-                }
-            }
-        }
+       stage('Build & Push Client Image') {
+    steps {
+        sh 'docker build -t abinayabalusamy/react-client:latest ./build/client'
+    }
+}
+stage('Build & Push Server Image') {
+    steps {
+        sh 'docker build -t abinayabalusamy/react-server:latest ./build/server'
+    }
+}
 
-        stage('Build & Push Server Image') {
-            steps {
-                script {
-                    sh "docker build -t $SERVER_IMAGE:latest ./server"
-                    sh "docker push $SERVER_IMAGE:latest"
-                }
-            }
-        }
 
         stage('Docker Logout') {
             steps {
