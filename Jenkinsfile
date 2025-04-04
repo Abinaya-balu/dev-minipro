@@ -2,39 +2,36 @@ pipeline {
     agent any
 
     environment {
-        CLIENT_IMAGE = "abinayabalusamy/react-app"
-        SERVER_IMAGE = "abinayabalusamy/node-server"
+        DOCKERHUB_USER = 'abinayabalusamy' // Change this to your DockerHub username
+        CLIENT_IMAGE = 'abinayabalusamy/react-app'
+        SERVER_IMAGE = 'abinayabalusamy/node-server'
     }
 
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/Abinaya-balu/dev-minipro.git'
+                git branch: 'master', url: 'https://github.com/Abinaya-balu/dev-minipro.git'
             }
         }
 
         stage('Docker Login') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-credentials',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                withCredentials([string(credentialsId: 'docker-hub-password', variable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
                 }
             }
         }
 
         stage('Build & Push Client Image') {
             steps {
-                sh 'docker build -t $CLIENT_IMAGE ./client'
+                sh 'docker build -t $CLIENT_IMAGE -f ./client/Dockerfile ./client'
                 sh 'docker push $CLIENT_IMAGE'
             }
         }
 
         stage('Build & Push Server Image') {
             steps {
-                sh 'docker build -t $SERVER_IMAGE ./server'
+                sh 'docker build -t $SERVER_IMAGE -f ./server/Dockerfile ./server'
                 sh 'docker push $SERVER_IMAGE'
             }
         }
@@ -45,4 +42,14 @@ pipeline {
             }
         }
     }
+
+    post {
+        success {
+            echo "✅ Docker images successfully built & pushed!"
+        }
+        failure {
+            echo "❌ Build failed! Check logs for errors."
+        }
+    }
 }
+
