@@ -23,10 +23,7 @@ pipeline {
 
        stage('Build & Push Client Image') {
     steps {
-        //sh 'docker build -t abinayabalusamy/react-client:latest ./build/client'
-        docker buildx create --use
-        docker buildx build --platform linux/amd64,linux/arm64 -t abinayabalusamy/react-client:latest ./build/client
-
+        sh 'docker build -t abinayabalusamy/react-client:latest ./build/client'
     }
 }
 stage('Build & Push Server Image') {
