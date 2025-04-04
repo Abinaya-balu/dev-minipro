@@ -1,5 +1,5 @@
 # Use Node.js image to build the React app
-FROM --platform=linux/amd64 node:18-alpine AS build
+FROM node:18-bullseye AS build
 WORKDIR /app
 
 COPY package.json package-lock.json ./
