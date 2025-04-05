@@ -21,20 +21,24 @@ pipeline {
             }
         }
 
-       stage('Build & Push Client Image') {
-     steps {
-        sh 'ls -R build/client'  // Check if package.json exists
-        docker build -t abinayabalusamy/react-client:latest -f build/client/Dockerfile build/client/
-        sh 'docker push abinayabalusamy/react-client:latest'
-    }
-}
+        stage('Build & Push Client Image') {
+            steps {
+                sh '''
+                    ls -R build/client
+                    docker build -t abinayabalusamy/react-client:latest -f build/client/Dockerfile build/client/
+                    docker push abinayabalusamy/react-client:latest
+                '''
+            }
+        }
 
-stage('Build & Push Server Image') {
-    steps {
-        sh 'docker build -t abinayabalusamy/react-server:latest ./build/server'
-    }
-}
-
+        stage('Build & Push Server Image') {
+            steps {
+                sh '''
+                    docker build -t abinayabalusamy/react-server:latest -f build/server/Dockerfile build/server/
+                    docker push abinayabalusamy/react-server:latest
+                '''
+            }
+        }
 
         stage('Docker Logout') {
             steps {
@@ -52,4 +56,5 @@ stage('Build & Push Server Image') {
         }
     }
 }
+
 
