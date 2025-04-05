@@ -1,12 +1,21 @@
-# Use Node.js as the base image
-FROM node:18-alpine
+# Use Node.js official image
+FROM node:18
 
+# Set working directory inside container
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+# Copy package files and install dependencies
+COPY package*.json ./
 RUN npm install
 
+# Copy all source files
 COPY . .
 
-EXPOSE 5000
-CMD ["node", "app.js"]
+# Copy environment file (make sure .env exists in this folder)
+COPY .env .env
+
+# Expose backend port
+EXPOSE 8001
+
+# Start the backend server
+CMD ["npm", "start"]
