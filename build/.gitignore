@@ -1,13 +1,13 @@
+# Ignore only the final build output, NOT the source code
+-build/
++build/**/build/
+
 # Node dependencies
 node_modules/
 package-lock.json
 
 # Environment variables
 .env
-
-# Build output
-build/
-dist/
 
 # Logs
 npm-debug.log
@@ -30,3 +30,4 @@ docker-compose.yml
 .vscode/
 .idea/
 *.swp
+
