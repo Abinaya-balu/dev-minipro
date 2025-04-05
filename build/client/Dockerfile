@@ -1,21 +1,23 @@
-# Use Node.js to build the React app
-FROM node:18-bullseye AS build
+# Use Node.js official image as the base
+FROM node:18
+
+# Set working directory
 WORKDIR /app
 
-# Copy package files first for caching
-COPY package.json package-lock.json ./
-
+# Copy package.json and install dependencies
+COPY package*.json ./
 RUN npm install
 
-# Copy everything else
-COPY . .  
+# Copy all files
+COPY . .
 
-# Build the project
+# Build the React app
 RUN npm run build
 
-# Use Nginx to serve the built React app
+# Use nginx to serve the build folder
 FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=0 /app/build /usr/share/nginx/html
 
 EXPOSE 80
+
 CMD ["nginx", "-g", "daemon off;"]
