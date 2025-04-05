@@ -24,7 +24,7 @@ pipeline {
        stage('Build & Push Client Image') {
      steps {
         sh 'ls -R build/client'  // Check if package.json exists
-        sh 'docker build -t abinayabalusamy/react-client:latest -f build/client/Dockerfile .'
+        docker build -t abinayabalusamy/react-client:latest -f build/client/Dockerfile build/client/
         sh 'docker push abinayabalusamy/react-client:latest'
     }
 }
